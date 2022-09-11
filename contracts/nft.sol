@@ -13,6 +13,7 @@ contract NFT is ERC721URIStorage, Ownable {
 
     constructor() ERC721("NFTToken", "RNFT") {}
 
+    //transfer NFT recipient address with tokenURI which is json metadata
     function mintNFT(address recipient, string memory tokenURI)
         public onlyOwner
         returns (uint256)
