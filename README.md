@@ -15,10 +15,10 @@ npx hardhat <contract.sol>
 ```
 ### Deploy contract
 ```sh
-npx hardhat --network <netowrkName> run scripts/deploy.js
+npx hardhat --network <networkName> run scripts/deploy.js
 ```
 
-### MinNFT
+### MintNFT
 ```sh
 node scripts/mint-nft.js
 ```
