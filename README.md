@@ -11,7 +11,7 @@ Rewards Dapp requires [Node.js](https://nodejs.org/) v17+ to run.
 
 #### Build Contract
 ```sh
-npx hardhat <contract.sol>
+npx hardhat compile
 ```
 ### Deploy contract
 ```sh
