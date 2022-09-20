@@ -11,7 +11,7 @@ app.get('/', (req, res) => {
 })
 
 app.get('/get/:userAddress', async (req, res) => {
-    const { userAddress } =req.params;
+    const { userAddress } = req.params;
     res.send(await nft.getAllTransactionOnAddress(userAddress));
 })
 
@@ -19,6 +19,18 @@ app.post('/mint', async (req, res) => {
     const help = await nft.mintNFT(metaDataHost);
     res.send('Token Id of the NFT is ' + help)
 })
+app.post('/transfer/:tokenId/:toAddress', async (req, res) => {
+    const { tokenId, toAddress } = req.params;
+    console.log("tokenId ", tokenId);
+    console.log("toAddress ", toAddress);
+    try {
+        transaction = await nft.transferNFT(tokenId, toAddress);
+        return res.send("Transferred NFT");
+    }
+    catch(err) {
+        res.status(400).send(err.message);
+    }
+});
 
 app.listen(port, () => {
     console.log(`Example app listening on url http://localhost:${port}`)

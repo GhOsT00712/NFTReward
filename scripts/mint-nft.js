@@ -8,8 +8,8 @@ const PUBLIC_KEY = process.env.PUBLIC_KEY;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
 const config = {
-    apiKey: "ntTumht4jK8DDCy7ry10K_nggxN3GpQZ",
-    network: Network.ETH_GOERLI,
+    apiKey: process.env.API_KEY,
+    network: process.env.NETWORK
 };
 const alchemy = new Alchemy(config);
 
@@ -21,7 +21,7 @@ const web3 = createAlchemyWeb3(API_URL)
 const contract = require("../artifacts/contracts/nft.sol/NFT.json")
 // console.log(JSON.stringify(contract.abi))
 
-const contractAddress = "0xb7529610fc2d5661a1d07e030e83e41b24dbc583" //public address of contract
+const contractAddress = process.env.CONTRACT_ADDRESS //public address of contract
 const nftContract = new web3.eth.Contract(contract.abi, contractAddress)
 
 // create transaction
@@ -40,17 +40,17 @@ async function mintNFT(tokenURI) {
     //make sure that it is mined properly.
     let signedTX;
     let hash;
+    
     try {
         signedTX = await web3.eth.accounts.signTransaction(tx, PRIVATE_KEY)
         hash = await web3.eth.sendSignedTransaction(signedTX.rawTransaction)
         console.log(
             "The hash of your transaction is: ", hash.transactionHash)
-        await sleep(8000)
 
         //getting latest transaction data
-        tx = await web3.eth.getTransactionReceipt(hash.transactionHash)
+        const txLatest = await web3.eth.getTransactionReceipt(hash.transactionHash)
 
-        let logs = tx.logs;
+        let logs = txLatest.logs;
         // console.log(logs);
         const tokenId = web3.utils.hexToNumber(logs[0].topics[3])
         console.log(await getNFTMetadata(tokenId))
@@ -60,6 +60,10 @@ async function mintNFT(tokenURI) {
         console.log(err);
     }
 }
+
+//mint NFT with nft-metadata.json uploaded in ipsf (pinata)
+// console.log(" All looks good ! Minting NFT now.")
+// mintNFT("https://gateway.pinata.cloud/ipfs/QmcSvsZ9Suz1PDKt1xgJM82mFq1gx284Z1uCRgTH4cc8jt")
 
 // search NFT metadata
 async function getNFTMetadata(tokenId) {
@@ -81,13 +85,50 @@ function sleep(ms) {
     });
 }
 
-async function getAllTransactionOnAddress(userPublicKey) {
-    // Get all NFTs under a particular user
-    const nfts = await alchemy.nft.getNftsForOwner(userPublicKey);
+
+async function getAllTransactionOnAddress(address) {
+    // Get all NFTs
+    //console.log("Getting all NFTs minted by address: ", address);
+    const nfts = await alchemy.nft.getNftsForOwner(address);
     return nfts;
 }
 
-module.exports = { mintNFT, getAllTransactionOnAddress };
+async function transferNFT(tokenId, toAddress) {
+    const nonce = await web3.eth.getTransactionCount(PUBLIC_KEY, 'latest'); // get transaction count
+    const tx = {
+        from: PUBLIC_KEY,
+        to: contractAddress,
+        nonce: nonce,
+        gas: 500000,
+        data: nftContract.methods.safeTransferFrom(PUBLIC_KEY, toAddress, tokenId).encodeABI() // what to do -> i.e mintNFT
+    };
+
+    let signedTX;
+    let hash;
+    
+    try {
+        signedTX = await web3.eth.accounts.signTransaction(tx, PRIVATE_KEY)
+        hash = await web3.eth.sendSignedTransaction(signedTX.rawTransaction)
+        console.log(
+            "The hash of your transaction is: ", hash.transactionHash)
+
+        //getting latest transaction data
+        const txLatest = await web3.eth.getTransactionReceipt(hash.transactionHash)
+
+        let logs = txLatest.logs;
+        console.log("logs");
+        console.log(logs);
+
+    } catch (err) {
+        console.log(err.message);
+        throw err
+    }
+}
 
 
-
+module.exports = {
+    mintNFT,
+    getNFTMetadata,
+    getAllTransactionOnAddress,
+    transferNFT
+}
