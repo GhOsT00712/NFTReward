@@ -12,9 +12,14 @@ app.post('/transfer/:tokenId/:toAddress', async (req, res) => {
     const { tokenId, toAddress } = req.params;
     console.log("tokenId ", tokenId);
     console.log("toAddress ", toAddress);
-    await nft.transferNFT(tokenId, toAddress);
-    return res.send("Transfered NFT");
-})
+    try {
+        transaction = await nft.transferNFT(tokenId, toAddress);
+        return res.send("Transferred NFT");
+    }
+    catch(err) {
+        res.status(400).send(err.message);
+    }
+});
 
 app.listen(port, () => {
     console.log(`Example app listening on url http://localhost:${port}`)

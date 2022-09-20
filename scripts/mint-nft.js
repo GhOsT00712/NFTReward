@@ -8,8 +8,8 @@ const PUBLIC_KEY = process.env.PUBLIC_KEY;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
 const config = {
-    apiKey: "GIsNWI5BbuALsudQ9IYNnHmM-6bW5iBp",
-    network: Network.ETH_GOERLI,
+    apiKey: process.env.API_KEY,
+    network: process.env.NETWORK,
 };
 const alchemy = new Alchemy(config);
 
@@ -104,8 +104,6 @@ async function transferNFT(tokenId, toAddress) {
         data: nftContract.methods.safeTransferFrom(PUBLIC_KEY, toAddress, tokenId).encodeABI() // what to do -> i.e mintNFT
     };
 
-    // sign transaction with web3 
-    //make sure that it is mined properly.
     let signedTX;
     let hash;
     
@@ -119,12 +117,15 @@ async function transferNFT(tokenId, toAddress) {
         const txLatest = await web3.eth.getTransactionReceipt(hash.transactionHash)
 
         let logs = txLatest.logs;
+        console.log("logs");
         console.log(logs);
 
     } catch (err) {
-        console.log(err);
+        console.log(err.message);
+        throw err
     }
 }
+
 
 module.exports = {
     mintNFT,
