@@ -2,7 +2,7 @@
 
 ## Ethernium D-App for Teams Rewards app
 
-[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
+[![Build](https://github.com/GhOsT00712/NFTReward/actions/workflows/azure-container-webapp.yml/badge.svg)](https://github.com/GhOsT00712/NFTReward/actions/workflows/azure-container-webapp.yml)
 
 ## Pre Requisite
 Rewards Dapp requires [Node.js](https://nodejs.org/) v17+ to run.
