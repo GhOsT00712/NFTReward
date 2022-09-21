@@ -4,7 +4,7 @@ require("dotenv").config()
 
 const app = express()
 const port = process.env.PORT
-const metaDataHost = process.env.METADATAHOST
+const metaDataHost = 
 
 app.get('/', async (req, res) => {
     res.send('Hello World!')
@@ -22,8 +22,23 @@ app.get('/get/:userAddress', async (req, res) => {
     }
 })
 
-app.post('/mint', async (req, res) => {
+app.post('/mint/:metaDataName', async (req, res) => {
+    const { metaDataName } = req.params;
+    let metaDataHost;
     try {
+        switch(metaDataName) {
+            case "innovator":
+              metaDataHost= process.env.METADATA_INNOVATOR
+              break;
+            case "top":
+                metaDataHost= process.env.METADATA_TOP
+              break;
+            case "help":
+                metaDataHost= process.env.METADATA_HELP
+              break;
+            default:
+                metaDataHost= process.env.METADATA_INNOVATOR
+          }
         const tokenId = await nft.mintNFT(metaDataHost);
         return res.send(tokenId.toString());
     }
