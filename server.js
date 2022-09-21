@@ -6,11 +6,12 @@ const app = express()
 const port = process.env.PORT
 const metaDataHost = process.env.METADATAHOST
 
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
     res.send('Hello World!')
 })
 
 app.get('/get/:userAddress', async (req, res) => {
+    console.log("calling get nft info")
     const { userAddress } = req.params;
     try {
         const nftData = await nft.getAllTransactionOnAddress(userAddress);
