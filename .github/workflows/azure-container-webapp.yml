@@ -27,7 +27,7 @@
 name: Build and deploy a container to an Azure Web App
 
 env:
-  AZURE_WEBAPP_NAME: nftdapp  # set this to the name of your Azure Web App
+  AZURE_WEBAPP_NAME: nftdapp # set this to the name of your Azure Web App
 
 on:
   push:
@@ -54,11 +54,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
 
+      - name: Lowercase the repo name and username
+        run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
+
       - name: Build and push container image to registry
         uses: docker/build-push-action@v2
         with:
-          load: true
-          tags: ghcr.io/ghost00712/nftrewards:latest
+          push: true
+          tags: ghcr.io/${{ env.REPO }}:${{ github.sha }}
           file: ./Dockerfile
 
   deploy:
@@ -71,10 +74,13 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
+      - name: Lowercase the repo name and username
+        run: echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
+
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          images: 'ghcr.io/ghost00712/nftrewards:latest'
+          images: 'ghcr.io/${{ env.REPO }}:${{ github.sha }}'
