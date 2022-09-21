@@ -23,6 +23,7 @@ app.get('/get/:userAddress', async (req, res) => {
 })
 
 app.post('/mint/:metaDataName', async (req, res) => {
+    console.log("Calling mint nft")
     const { metaDataName } = req.params;
     let metaDataHost;
     try {
