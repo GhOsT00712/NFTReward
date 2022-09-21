@@ -12,13 +12,25 @@ app.get('/', (req, res) => {
 
 app.get('/get/:userAddress', async (req, res) => {
     const { userAddress } = req.params;
-    res.send(await nft.getAllTransactionOnAddress(userAddress));
+    try {
+        const nftData = await nft.getAllTransactionOnAddress(userAddress);
+        return res.send(nftData);
+    }
+    catch(err) {
+        res.status(400).send(err.message);
+    }
 })
 
 app.post('/mint', async (req, res) => {
-    const help = await nft.mintNFT(metaDataHost);
-    res.send('Token Id of the NFT is ' + help)
+    try {
+        const tokenId = await nft.mintNFT(metaDataHost);
+        return res.send(tokenId.toString());
+    }
+    catch(err) {
+        res.status(400).send(err.message);
+    }
 })
+
 app.post('/transfer/:tokenId/:toAddress', async (req, res) => {
     const { tokenId, toAddress } = req.params;
     console.log("tokenId ", tokenId);
